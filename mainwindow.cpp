@@ -71,8 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	customPlot->legend->setSelectableParts(QCPLegend::spItems); // legend box shall not be selectable, only legend items
 
 	addRealtimeGraph();
-	addRandomGraph();
-	addRandomGraph();
+	//addRandomGraph();
+	//addRandomGraph();
   
 	// connect slot that ties some axis selections together (especially opposite axes):
 	connect(customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
@@ -187,6 +187,23 @@ void MainWindow::selectionChanged() {
 	}
 }
 
+float MainWindow::ReadCpuTemp(){
+//read cpu temp from file
+std::ifstream tempFile;
+std::string t;
+
+tempFile.open("/sys/class/thermal/thermal_zone0/temp");
+getline(tempFile,t);
+
+tempFile.close();
+
+float temp=std::stof(t)/1000 ;
+//temp=std::roundf(temp*100)/100; //rounding off
+
+return temp;
+
+}
+
 void MainWindow::mousePress() {
 	// if an axis is selected, only allow the direction of that axis to be dragged
 	// if no axis is selected, both directions may be dragged
@@ -240,9 +257,13 @@ void MainWindow::addRealtimeSample(double v) {
 void MainWindow::timerEvent( QTimerEvent * ) {
 	// demonstrates that adding a few samples before plotting speeds things up
 	for(int i = 0; i < 5; i++) {
-		addRealtimeSample(sin(t*5));
+		auto temp=ReadCpuTemp();
+		addRealtimeSample(temp);
 		t = t + dt;
+		
+		//std::cout << "Timer is called " << std::endl ;
 	}
+	customPlot->yAxis->setRange(0, 70);
 	customPlot->replot();
 }
 

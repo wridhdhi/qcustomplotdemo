@@ -13,6 +13,8 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <fstream>
+#include <iostream>
 
 
 
@@ -56,6 +58,7 @@ private:
 	const int nRealtimePoints = 500;
 	const double dt = 0.02;
 	double t = 0;
+	float ReadCpuTemp();
 };
 
 #endif // MAINWINDOW_H
